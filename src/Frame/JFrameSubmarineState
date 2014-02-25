@@ -1,0 +1,125 @@
+package Frame;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
+import java.awt.AWTKeyStroke;
+import MainSubmarine.Main;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Color;
+import java.awt.Canvas;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+
+public class JFrameSubmarineState extends JFrame{
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	public static Color ColorBackLeft = Color.RED;
+	public static Color ColorBackRight = Color.RED;
+	public static Color ColorLateral = Color.RED;
+	public static Color ColorCenter = Color.RED;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					JFrameSubmarineState frame = new JFrameSubmarineState();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public JFrameSubmarineState() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 800, 600);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		
+		JMenuItem mntmClose = new JMenuItem("Close");
+		mntmClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Main.SubMarineStateOFF();
+			}
+		});
+		mnFile.add(mntmClose);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JPanel panelBackLeft = new JPanel();
+		panelBackLeft.setBackground(getPanelBackLeft());
+		panelBackLeft.setBounds(246, 392, 40, 33);
+		contentPane.add(panelBackLeft);
+		
+		JPanel panelBackRight = new JPanel();
+		panelBackRight.setBackground(getPanelBackRight());
+		panelBackRight.setBounds(562, 392, 40, 33);
+		contentPane.add(panelBackRight);
+		
+		JPanel panelCenter = new JPanel();
+		panelCenter.setBackground(getPanelCenter());
+		panelCenter.setBounds(399, 243, 40, 33);
+		contentPane.add(panelCenter);
+		
+		JPanel panelLateral = new JPanel();
+		panelLateral.setBackground(getPanelLateral());
+		panelLateral.setBounds(246, 243, 40, 33);
+		contentPane.add(panelLateral);
+	}
+	public static void setPanelBackLeft(Color colorBackL) 
+	{
+		ColorBackLeft = colorBackL;
+	}
+	public Color getPanelBackLeft()
+	{
+		return ColorBackLeft;
+	}
+	public static void setPanelBackRight(Color colorBackR)
+	{
+		ColorBackRight = colorBackR;
+	}
+	public Color getPanelBackRight()
+	{
+		return ColorBackRight;
+	}
+	public static void setPanelLateral(Color colorLat)
+	{
+		ColorLateral = colorLat;
+	}
+	public Color getPanelLateral()
+	{
+		return ColorLateral;
+	}
+	public static void setPanelCenter(Color colorCen)
+	{
+		ColorCenter = colorCen;
+	}
+	public Color getPanelCenter()
+	{
+		return ColorCenter;
+	}
+}
