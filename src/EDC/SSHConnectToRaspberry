@@ -1,0 +1,75 @@
+package EDC;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import javax.swing.JOptionPane;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UIKeyboardInteractive;
+import com.jcraft.jsch.UserInfo;
+
+	public class SSHConnectToRaspberry{
+		
+		public static String RaspberryUser = "pi";
+		public static String RaspberryPassword = "password";
+		public static String RaspberryIP ="192.168.1.135";
+		public static String ProgramDirectory = "sudo java -jar /home/pi/applicazione/SubmarineRasPiGPIO.jar";
+	
+		  public static void SSHConnect(){
+		    
+		    try{
+		      JSch jsch=new JSch();
+
+		      Session session=jsch.getSession(RaspberryUser, RaspberryIP, 22);
+
+		      session.setPassword(RaspberryPassword);
+
+		      UserInfo ui = new MyUserInfo(){
+		        public void showMessage(String message){
+		          JOptionPane.showMessageDialog(null, message);
+		        }
+		        public boolean promptYesNo(String message){
+		          Object[] options={ "yes", "no" };
+		          int foo=JOptionPane.showOptionDialog(null, 
+		                                               message,
+		                                               "Warning", 
+		                                               JOptionPane.DEFAULT_OPTION, 
+		                                               JOptionPane.WARNING_MESSAGE,
+		                                               null, options, options[0]);
+		          return foo==0;
+		        }
+		      };
+             
+		      session.setUserInfo(ui);
+
+		      session.connect(30000);   
+
+		      Channel channel=session.openChannel("shell");
+		      InputStream stream = new ByteArrayInputStream(ProgramDirectory.getBytes("UTF-8"));
+
+		      channel.setInputStream(stream);
+		      channel.connect(3*1000);
+		    }
+		    catch(Exception e){
+		      System.out.println(e);
+		    }
+		  }
+
+		  public static abstract class MyUserInfo
+		                          implements UserInfo, UIKeyboardInteractive{
+		    public String getPassword(){ return null; }
+		    public boolean promptYesNo(String str){ return false; }
+		    public String getPassphrase(){ return null; }
+		    public boolean promptPassphrase(String message){ return false; }
+		    public boolean promptPassword(String message){ return false; }
+		    public void showMessage(String message){ }
+		    public String[] promptKeyboardInteractive(String destination,
+		                                              String name,
+		                                              String instruction,
+		                                              String[] prompt,
+		                                              boolean[] echo){
+		      return null;
+		    }
+		  }
+		}
