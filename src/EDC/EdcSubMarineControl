@@ -1,0 +1,260 @@
+package EDC;
+
+import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import DataManager.ControlToReceive;
+import Frame.JFrameSubmarineState;
+
+import com.eurotech.cloud.client.EdcCallbackHandler;
+import com.eurotech.cloud.client.EdcClientException;
+import com.eurotech.cloud.client.EdcClientFactory;
+import com.eurotech.cloud.client.EdcCloudClient;
+import com.eurotech.cloud.client.EdcConfiguration;
+import com.eurotech.cloud.client.EdcConfigurationFactory;
+import com.eurotech.cloud.client.EdcDeviceProfile;
+import com.eurotech.cloud.client.EdcDeviceProfileFactory;
+import com.eurotech.cloud.message.EdcPayload;
+
+public class EdcSubMarineControl implements EdcCallbackHandler {
+	
+	private static String ACCOUNT_NAME = "SumMarineManagementAccount";             // Your Account name in Cloud
+	private static String ASSET_ID     = "SubMarineSharingManagement";            // Unique Asset ID of this client device
+	private static String BROKER_URL   = "mqtt://127.0.0.1:1883";                 // URL address of broker 
+	public static String CLIENT_ID    = "SubMarineManagementClient";              // Unique Client ID of this client device
+	private static int USERNAME     = 0;                            // Username in account, to use for publishing
+	private static String PASSWORD     = null;
+	private static final int    PUBLISH_PERIOD = 100;      // time between published messages, in milliseconds
+	public static final String TOPIC = "SumMarineManagementAccount/SubMarineSharingManagement/TopicControlOutput";
+	
+	public static EdcCloudClient edcCloudClient = null;
+	public static int ConnectionBrokerFlag =0;
+
+	@Override
+	public void connectionLost() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void connectionRestored() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controlArrived(String arg0, String arg1, EdcPayload arg2,
+			int arg3, boolean arg4) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controlArrived(String arg0, String arg1, byte[] arg2, int arg3,
+			boolean arg4) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishArrived(String arg0, String arg1, EdcPayload arg2,
+			int arg3, boolean arg4) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishArrived(String arg0, String arg1, byte[] arg2, int arg3,
+			boolean arg4) {
+		if (arg1.contentEquals("TopicControlOutput"))
+		{
+			ControlToReceive ControlFromRaspi = new ControlToReceive();
+			try 
+			{
+			ControlFromRaspi = (ControlToReceive) toObject(arg2);
+			} 
+			catch (ClassNotFoundException e) 
+			{
+				e.printStackTrace();
+			} 
+			catch (IOException e) 
+			{
+				
+				e.printStackTrace();
+			}
+			if(!ControlFromRaspi.getEngineAheadLeft() && !ControlFromRaspi.getEngineBackLeft())
+			{
+				JFrameSubmarineState.setPanelBackLeft(Color.RED);
+			}
+			else
+				if(ControlFromRaspi.getEngineAheadLeft())
+				{
+					JFrameSubmarineState.setPanelBackLeft(Color.GREEN);
+					System.out.println("de");
+				}
+					
+				else
+					if(ControlFromRaspi.getEngineBackLeft())
+						JFrameSubmarineState.setPanelBackLeft(Color.BLUE);
+			
+			if(!ControlFromRaspi.getEngineAheadRight() && !ControlFromRaspi.getEngineBackRight())
+				JFrameSubmarineState.setPanelBackRight(Color.RED);
+			else
+				if(ControlFromRaspi.getEngineAheadRight())
+				{
+					JFrameSubmarineState.setPanelBackRight(Color.GREEN);
+				}
+				else
+					if(ControlFromRaspi.getEngineBackRight())
+						JFrameSubmarineState.setPanelBackRight(Color.BLUE);
+			
+			if(!ControlFromRaspi.getEngineEmersion() && !ControlFromRaspi.getEngineImmersion())
+				JFrameSubmarineState.setPanelCenter(Color.RED);
+			else
+				if(ControlFromRaspi.getEngineEmersion())
+					JFrameSubmarineState.setPanelBackLeft(Color.GREEN);
+				else
+					if(ControlFromRaspi.getEngineImmersion())
+						JFrameSubmarineState.setPanelBackLeft(Color.BLUE);
+			
+			if(!ControlFromRaspi.getEngineLateraleRight() && !ControlFromRaspi.getEngineLateralLeft())
+				JFrameSubmarineState.setPanelBackLeft(Color.RED);
+			else
+				if(ControlFromRaspi.getEngineLateraleRight())
+					JFrameSubmarineState.setPanelBackLeft(Color.GREEN);
+				else
+					if(ControlFromRaspi.getEngineLateralLeft())
+						JFrameSubmarineState.setPanelBackLeft(Color.BLUE);
+			
+					
+			
+                            
+		}
+		
+	}
+	
+	public static void Login() throws EdcClientException
+	{
+        //rimodificare meglio username, era generale preso da sopra
+	    String Username = Integer.toString(USERNAME);
+		EdcConfigurationFactory confFact = EdcConfigurationFactory.getInstance();
+		EdcConfiguration conf = confFact.newEdcConfiguration(ACCOUNT_NAME, 
+	                                                             ASSET_ID, 
+	                                                             BROKER_URL, 
+	                                                             CLIENT_ID, 
+	                                                             Username, 
+	                                                             PASSWORD);
+	    
+	     EdcDeviceProfileFactory profFactory = EdcDeviceProfileFactory.getInstance();
+	     EdcDeviceProfile prof = profFactory.newEdcDeviceProfile();
+	     prof.setDisplayName("SubMarineManagementClient");			// friendly name for this CLIENT_ID, for display in the Cloud
+	     prof.setModelName("Eclipse Java Client");
+	   
+	     edcCloudClient = EdcClientFactory.newInstance(conf, prof, new EdcSubMarineControl());
+		 edcCloudClient.startSession();
+	     edcCloudClient.subscribe("TopicControlOutput",1);
+	     edcCloudClient.controlSubscribe("+", "TopicControlOutput", 1);
+	     ConnectionBrokerFlag=1; //usarlo per mettere una notifica da qualche parte
+	     new EDC.SendDataClass().start();
+	     
+	  }
+
+	@Override
+	public void published(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void subscribed(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unsubscribed(int arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public static byte[] toByteArray(Object obj) throws IOException 
+	{
+		byte[] bytes = null;
+		ByteArrayOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		try 
+		{
+			bos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+			oos.flush();
+			bytes = bos.toByteArray();
+		} 
+		finally 
+		{
+			if (oos != null) 
+			{
+				oos.close();
+			}
+			if (bos != null) 
+			{
+				bos.close();
+			}
+		}
+		return bytes;
+	}
+
+	public Object toObject(byte[] bytes) throws IOException,ClassNotFoundException 
+	{
+		Object obj = null;
+		ByteArrayInputStream bis = null;
+		ObjectInputStream ois = null;
+		try 
+		{
+			bis = new ByteArrayInputStream(bytes);
+			ois = new ObjectInputStream(bis);
+			obj = ois.readObject();
+		} 
+		finally 
+		{
+			if (bis != null) 
+			{
+				bis.close();
+			}
+			if (ois != null) 
+			{
+				ois.close();
+			}
+		}
+		return obj;
+	}
+	
+	public static void SendMessage (String topic, byte[] message)
+	{
+		try 
+		{
+			edcCloudClient.publish(topic, message, 1, false);
+			
+		} 	
+		catch (EdcClientException e) 
+		{
+			
+			e.printStackTrace();
+		}  
+        try 
+        {
+			Thread.sleep(PUBLISH_PERIOD);
+		} 
+        catch (InterruptedException e) 
+        {
+			
+			e.printStackTrace();
+		}
+	}
+	
+
+}
