@@ -1,0 +1,169 @@
+package EDC;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+import DataManager.ControlToSend;
+
+
+public class SendDataClass extends Thread {
+	public static boolean StateRele0ToSend = false;
+	public static boolean StateRele1ToSend = false;
+	public static boolean StateRele2ToSend = false;
+	public static boolean StateRele3ToSend = false;
+	public static boolean StateRele4ToSend = false;
+	public static boolean StateRele5ToSend = false;
+	public static boolean StateRele6ToSend = false;
+	public static boolean StateRele7ToSend = false;
+	public static int SleepTimeToSendData = 100;
+	public static String StateTypeOfMovement  = null;
+	
+	
+	
+	public SendDataClass()
+	{
+	
+	}
+	public void run()
+	{
+
+		for(;;)
+		{
+			ControlToSend SendDataToRaspi = new ControlToSend();
+			
+			SendDataToRaspi.setRele0(getStateRele0ToSend());
+			SendDataToRaspi.setRele1(getStateRele1ToSend());
+			SendDataToRaspi.setRele2(getStateRele2ToSend());
+			SendDataToRaspi.setRele3(getStateRele3ToSend());
+			SendDataToRaspi.setRele4(getStateRele4ToSend());
+			SendDataToRaspi.setRele5(getStateRele5ToSend());
+			SendDataToRaspi.setRele6(getStateRele6ToSend());
+			SendDataToRaspi.setRele7(getStateRele7ToSend());
+			SendDataToRaspi.setTypeOfMovement(null);
+			//if you want to implement high-level movements
+			SendDataToRaspi.setTypeOfMovement(getStateTypeOfMovement());
+			try 
+			{
+				EDC.EdcSubMarineControl.SendMessage("TopicControlInput", toByteArray(SendDataToRaspi));
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			try 
+			{
+				Thread.sleep(90);
+			} 
+			catch (InterruptedException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}			
+}
+	public static byte[] toByteArray(Object obj) throws IOException 
+	{
+		byte[] bytes = null;
+		ByteArrayOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		try 
+		{
+			bos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+			oos.flush();
+			bytes = bos.toByteArray();
+		} 
+		finally 
+		{
+			if (oos != null) 
+			{
+				oos.close();
+			}
+			if (bos != null) 
+			{
+				bos.close();
+			}
+		}
+		return bytes;
+	}
+    //sending direction without relay status
+	public static void setStateTypeOfMovement(String mov)
+	{
+		StateTypeOfMovement = mov;
+	}
+	public String getStateTypeOfMovement ()
+	{
+		return StateTypeOfMovement;
+	}
+	//sending state relays directly from pc
+	public static void setStateRele0ToSend(boolean rel0)
+	{
+		StateRele0ToSend = rel0;
+	}
+	public boolean getStateRele0ToSend()
+	{
+		return StateRele0ToSend;
+	}
+	public static void setStateRele1ToSend(boolean rel1)
+	{
+		StateRele1ToSend = rel1;
+	}
+	public boolean getStateRele1ToSend()
+	{
+		return StateRele1ToSend;
+	}
+	public static void setStateRele2ToSend(boolean rel2)
+	{
+		StateRele2ToSend = rel2;
+	}
+	public boolean getStateRele2ToSend()
+	{
+		return StateRele2ToSend;
+	}
+	public static void setStateRele3ToSend(boolean rel3)
+	{
+		StateRele0ToSend = rel3;
+	}
+	public boolean getStateRele3ToSend()
+	{
+		return StateRele3ToSend;
+	}
+	public static void setStateRele4ToSend(boolean rel4)
+	{
+		StateRele4ToSend = rel4;
+	}
+	public boolean getStateRele4ToSend()
+	{
+		return StateRele4ToSend;
+	}
+	public static void setStateRele5ToSend(boolean rel5)
+	{
+		StateRele5ToSend = rel5;
+	}
+	public boolean getStateRele5ToSend()
+	{
+		return StateRele5ToSend;
+	}
+	public static void setStateRele6ToSend(boolean rel6)
+	{
+		StateRele6ToSend = rel6;
+	}
+	public boolean getStateRele6ToSend()
+	{
+		return StateRele6ToSend;
+	}
+	public static void setStateRele7ToSend(boolean rel7)
+	{
+		StateRele7ToSend = rel7;
+	}
+	public boolean getStateRele7ToSend()
+	{
+		return StateRele7ToSend;
+	}
+
+}
