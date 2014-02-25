@@ -1,0 +1,784 @@
+package MainSubmarine;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+
+import Frame.JFrameSubmarineCamera;
+import Frame.JFrameSubmarineState;
+
+import com.eurotech.cloud.client.EdcClientException;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import javax.swing.JButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JDesktopPane;
+import javax.swing.JSplitPane;
+import javax.swing.JLayeredPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+
+import java.awt.Panel;
+import java.awt.TextField;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JEditorPane;
+import javax.swing.JToggleButton;
+import javax.swing.JRadioButton;
+import javax.swing.JProgressBar;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class Main {
+
+	private JFrame frame;
+	private JTextField textField;
+	public int DelaySendTime = 100;    //delay time configuration in the time of sending to PC
+	//configuration ssh connection from PC java program
+	public String IPRaspberryFromUser = "192.168.1.135"; //default configuaration in ip static configuration
+	public String UserRaspberryFromUser = "pi";
+	public String PasswordRaspberryFromUser = "raspberry";
+	//end configuration
+	private JTextField textFieldIPRaspi;
+	private JTextField textFieldUserRaspi;
+	private JTextField textFieldPassRaspi;
+	public boolean StateOfApply = false;
+	//static JFrame ControlFrame=new Control();          //if you want to use Jframe mode you must enter the start button
+	//static JFrame TouchControlFrame = new ControlPro();
+	static JFrame SubMarineState = new JFrameSubmarineState();
+	static JFrame SubMarineCamera = new JFrameSubmarineCamera();
+	public boolean KeyboardUse = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Main window = new Main();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Main() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+
+		frame = new JFrame();
+		frame.setBounds(100, 100, 800, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(0, 0, 782, 553);
+		frame.getContentPane().add(tabbedPane);
+		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("Connection", null, panel, null);
+		panel.setLayout(null);
+		
+		JButton btnNewButton = new JButton("Connect to raspberry");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//implementazione avvio broker da programma
+				/*ProcessBuilder processo = new ProcessBuilder("C:\\Users\\Roby\\Desktop\\progetti eclipse\\SubmarineControlPCWindowsBuilder\\MQTT broker\\rsmb_1.1.0\\broker.exe","","");
+				try {
+					processo.start();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}*/
+				/*try
+				{
+					Process pr = Runtime.getRuntime().exec("broker.exe",null, new File(System.getProperty("user.home") + "\\Desktop\\progetti eclipse\\SubmarineControlPCWindowsBuilder\\MQTT broker\\rsmb_1.1.0\\broker.exe"));
+				} 
+				catch (IOException e1) 
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}*/
+		
+				//EDC.SSHConnectToRaspberry.SSHConnect();
+				
+				try 
+				{
+					EDC.EdcSubMarineControl.Login();
+				} 
+				catch (EdcClientException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		btnNewButton.setBounds(0, 13, 153, 37);
+		panel.add(btnNewButton);
+		
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("Control 1", null, panel_1, null);
+		panel_1.setLayout(null);
+		
+		JButton btnNewButton_1 = new JButton("Ahead");
+		btnNewButton_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(true);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(true);
+				EDC.SendDataClass.setStateTypeOfMovement("ahead");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnNewButton_1.setBounds(323, 67, 114, 35);
+		panel_1.add(btnNewButton_1);
+		
+		JButton btnLeft = new JButton("Left");
+		btnLeft.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(true);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("left");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnLeft.setBounds(192, 170, 114, 35);
+		panel_1.add(btnLeft);
+		
+		JButton btnRight = new JButton("Right");
+		btnRight.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(true);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("right");
+				
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnRight.setBounds(465, 170, 114, 35);
+		panel_1.add(btnRight);
+		
+		JButton btnBackwards = new JButton("Backwards");
+		btnBackwards.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(true);
+				EDC.SendDataClass.setStateRele1ToSend(true);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("backwards");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnBackwards.setBounds(323, 275, 114, 35);
+		panel_1.add(btnBackwards);
+		
+		JButton btnImmersion = new JButton("Immersion");
+		btnImmersion.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(true);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("immersion");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnImmersion.setBounds(59, 357, 114, 35);
+		panel_1.add(btnImmersion);
+		
+		JButton btnEmersion = new JButton("Emersion");
+		btnEmersion.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(true);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("emersion");
+			}
+		});
+		btnEmersion.setBounds(59, 448, 114, 35);
+		panel_1.add(btnEmersion);
+		
+		JButton btnClockwise = new JButton("Clockwise");
+		btnClockwise.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(true);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(true);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("clockwise");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		btnClockwise.setBounds(590, 362, 131, 35);
+		panel_1.add(btnClockwise);
+		
+		JButton btnCounterclockwise = new JButton("Counterclockwise");
+		btnCounterclockwise.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(true);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(true);
+				EDC.SendDataClass.setStateTypeOfMovement("counterclockwise");
+			}
+		});
+		btnCounterclockwise.setBounds(590, 448, 131, 35);
+		panel_1.add(btnCounterclockwise);
+		
+		JButton btnSubamatineState = new JButton("Subamatine state");
+		btnSubamatineState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				SubMarineState.setVisible(true);
+			}
+		});
+		btnSubamatineState.setBounds(12, 13, 147, 35);
+		panel_1.add(btnSubamatineState);
+		
+		JButton btnCamera = new JButton("Camera");
+		btnCamera.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SubMarineCamera.setVisible(true);
+			}
+		});
+		btnCamera.setBounds(12, 72, 147, 35);
+		panel_1.add(btnCamera);
+		
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Control 2", null, panel_2, null);
+		panel_2.setLayout(null);
+		
+		JPanel panel_4 = new JPanel();
+		panel_4.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(KeyboardUse)
+				{
+					if(arg0.getKeyCode() == 38)
+						System.out.println("avanti");
+						
+				}
+			}
+		});
+		panel_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if ((e.getButton () == MouseEvent.BUTTON1)&& !KeyboardUse)
+				{
+					if(e.getX()<100)
+					{
+						if(e.getY()<100)
+						{
+							//attiva motori avanti e vai a sx
+						EDC.SendDataClass.StateRele0ToSend = false;
+						EDC.SendDataClass.StateRele1ToSend = false;
+						EDC.SendDataClass.StateRele2ToSend = false;
+						EDC.SendDataClass.StateRele3ToSend = false;
+						EDC.SendDataClass.StateRele4ToSend = true;
+						EDC.SendDataClass.StateRele5ToSend = false;
+						EDC.SendDataClass.StateRele6ToSend = true;
+						EDC.SendDataClass.StateRele7ToSend = true;
+						EDC.SendDataClass.setStateTypeOfMovement("ahead_left");
+						}
+						else
+							if(e.getY()<400)
+							{
+								//attiva motore vai a sx
+								EDC.SendDataClass.StateRele0ToSend = true;
+								EDC.SendDataClass.StateRele1ToSend = false;
+								EDC.SendDataClass.StateRele2ToSend = false;
+								EDC.SendDataClass.StateRele3ToSend = false;
+								EDC.SendDataClass.StateRele4ToSend = false;
+								EDC.SendDataClass.StateRele5ToSend = false;
+								EDC.SendDataClass.StateRele6ToSend = false;
+								EDC.SendDataClass.StateRele7ToSend = false;
+								EDC.SendDataClass.setStateTypeOfMovement("left");
+							}
+							else 
+							{
+								//vai indietro a sx
+								EDC.SendDataClass.StateRele0ToSend = true;
+								EDC.SendDataClass.StateRele1ToSend = true;
+								EDC.SendDataClass.StateRele2ToSend = false;
+								EDC.SendDataClass.StateRele3ToSend = false;
+								EDC.SendDataClass.StateRele4ToSend = false;
+								EDC.SendDataClass.StateRele5ToSend = false;
+								EDC.SendDataClass.StateRele6ToSend = true;
+								EDC.SendDataClass.StateRele7ToSend = false;
+								EDC.SendDataClass.setStateTypeOfMovement("backwards_left");
+							}
+					}
+					else
+						if(e.getX()<400)
+						{
+							if(e.getY()<100)
+							{
+								//attiva motori avanti
+							EDC.SendDataClass.StateRele0ToSend = false;
+							EDC.SendDataClass.StateRele1ToSend = false;
+							EDC.SendDataClass.StateRele2ToSend = false;
+							EDC.SendDataClass.StateRele3ToSend = false;
+							EDC.SendDataClass.StateRele4ToSend = true;
+							EDC.SendDataClass.StateRele5ToSend = false;
+							EDC.SendDataClass.StateRele6ToSend = false;
+							EDC.SendDataClass.StateRele7ToSend = true;
+							EDC.SendDataClass.setStateTypeOfMovement("ahead");
+							}
+							else
+								if(e.getY()<400)
+								{
+									//attiva motore vai in profondità
+									EDC.SendDataClass.StateRele0ToSend = false;
+									EDC.SendDataClass.StateRele1ToSend = false;
+									EDC.SendDataClass.StateRele2ToSend = false;
+									EDC.SendDataClass.StateRele3ToSend = true;
+									EDC.SendDataClass.StateRele4ToSend = false;
+									EDC.SendDataClass.StateRele5ToSend = false;
+									EDC.SendDataClass.StateRele6ToSend = false;
+									EDC.SendDataClass.StateRele7ToSend = false;
+									EDC.SendDataClass.setStateTypeOfMovement("immersion");
+								}
+								else 
+								{
+									//vai indietro
+									EDC.SendDataClass.StateRele0ToSend = true;
+									EDC.SendDataClass.StateRele1ToSend = true;
+									EDC.SendDataClass.StateRele2ToSend = false;
+									EDC.SendDataClass.StateRele3ToSend = false;
+									EDC.SendDataClass.StateRele4ToSend = false;
+									EDC.SendDataClass.StateRele5ToSend = false;
+									EDC.SendDataClass.StateRele6ToSend = false;
+									EDC.SendDataClass.StateRele7ToSend = false;
+									EDC.SendDataClass.setStateTypeOfMovement("backwards");
+								}
+						
+						}
+						else
+						{
+							if(e.getY()<100)
+							{
+								//attiva motori avanti dx
+							EDC.SendDataClass.StateRele0ToSend = false;
+							EDC.SendDataClass.StateRele1ToSend = false;
+							EDC.SendDataClass.StateRele2ToSend = false;
+							EDC.SendDataClass.StateRele3ToSend = false;
+							EDC.SendDataClass.StateRele4ToSend = true;
+							EDC.SendDataClass.StateRele5ToSend = true;
+							EDC.SendDataClass.StateRele6ToSend = false;
+							EDC.SendDataClass.StateRele7ToSend = true;
+							EDC.SendDataClass.setStateTypeOfMovement("ahead_right");
+							}
+							else
+								if(e.getY()<400)
+								{
+									//attiva motore vai a sx
+									EDC.SendDataClass.StateRele0ToSend = false;
+									EDC.SendDataClass.StateRele1ToSend = false;
+									EDC.SendDataClass.StateRele2ToSend = false;
+									EDC.SendDataClass.StateRele3ToSend = false;
+									EDC.SendDataClass.StateRele4ToSend = false;
+									EDC.SendDataClass.StateRele5ToSend = false;
+									EDC.SendDataClass.StateRele6ToSend = true;
+									EDC.SendDataClass.StateRele7ToSend = false;
+									EDC.SendDataClass.setStateTypeOfMovement("left");
+								}
+								else 
+								{
+									//vai indietro a dx
+									EDC.SendDataClass.StateRele0ToSend = true;
+									EDC.SendDataClass.StateRele1ToSend = true;
+									EDC.SendDataClass.StateRele2ToSend = false;
+									EDC.SendDataClass.StateRele3ToSend = false;
+									EDC.SendDataClass.StateRele4ToSend = false;
+									EDC.SendDataClass.StateRele5ToSend = true;
+									EDC.SendDataClass.StateRele6ToSend = false;
+									EDC.SendDataClass.StateRele7ToSend = false;
+									EDC.SendDataClass.setStateTypeOfMovement("backwards_right");
+								}
+						}
+				}
+				else 
+					if((e.getButton () == MouseEvent.BUTTON3 && e.getY()<400 && 
+					    e.getY()>100 && e.getX()>100 && e.getX()<400) && !KeyboardUse)
+					{
+						//attiva motore emersione
+						EDC.SendDataClass.StateRele0ToSend = false;
+						EDC.SendDataClass.StateRele1ToSend = false;
+						EDC.SendDataClass.StateRele2ToSend = true;
+						EDC.SendDataClass.StateRele3ToSend = false;
+						EDC.SendDataClass.StateRele4ToSend = false;
+						EDC.SendDataClass.StateRele5ToSend = false;
+						EDC.SendDataClass.StateRele6ToSend = false;
+						EDC.SendDataClass.StateRele7ToSend = false;
+						EDC.SendDataClass.setStateTypeOfMovement("emersion");
+					}
+			}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		panel_4.setBackground(Color.WHITE);
+		panel_4.setBounds(138, 11, 500, 500);
+		panel_2.add(panel_4);
+		
+		JButton button = new JButton("Clockwise");
+		button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(true);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(true);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement("clockwise");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		button.setBounds(0, 13, 131, 35);
+		panel_2.add(button);
+		
+		JButton button_1 = new JButton("Counterclockwise");
+		button_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(true);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(true);
+				EDC.SendDataClass.setStateTypeOfMovement("counterclockwise");
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EDC.SendDataClass.setStateRele0ToSend(false);
+				EDC.SendDataClass.setStateRele1ToSend(false);
+				EDC.SendDataClass.setStateRele2ToSend(false);
+				EDC.SendDataClass.setStateRele3ToSend(false);
+				EDC.SendDataClass.setStateRele4ToSend(false);
+				EDC.SendDataClass.setStateRele5ToSend(false);
+				EDC.SendDataClass.setStateRele6ToSend(false);
+				EDC.SendDataClass.setStateRele7ToSend(false);
+				EDC.SendDataClass.setStateTypeOfMovement(null);
+			}
+		});
+		button_1.setBounds(0, 107, 131, 35);
+		panel_2.add(button_1);
+		
+		JButton button_2 = new JButton("Subamatine state");
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SubMarineState.setVisible(true);
+			}
+		});
+		button_2.setBounds(0, 207, 131, 35);
+		panel_2.add(button_2);
+		
+		JButton button_3 = new JButton("Camera");
+		button_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SubMarineCamera.setVisible(true);
+			}
+		});
+		button_3.setBounds(0, 276, 131, 35);
+		panel_2.add(button_3);
+		
+		JCheckBox chckbxKeyboardComand = new JCheckBox("Keyboard");
+		chckbxKeyboardComand.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				if(arg0.getStateChange() == 1)
+					KeyboardUse = true;
+				else
+					if(arg0.getStateChange() == 2)
+						KeyboardUse = false;
+			}
+		});
+		chckbxKeyboardComand.setBounds(8, 389, 89, 25);
+		panel_2.add(chckbxKeyboardComand);
+		
+		JPanel panel_3 = new JPanel();
+		tabbedPane.addTab("Settings", null, panel_3, null);
+		panel_3.setLayout(null);
+		
+		textField = new JTextField();
+		textField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == textField && StateOfApply)
+				{
+					DelaySendTime = Integer.parseInt(e.getActionCommand());
+					System.out.println(DelaySendTime);
+				}
+			}
+		});
+		textField.setBounds(163, 44, 116, 22);
+		panel_3.add(textField);
+		textField.setColumns(10);
+		
+		JLabel lblNewLabel = new JLabel("Frequency of sending (T)");
+		lblNewLabel.setBounds(12, 47, 149, 16);
+		panel_3.add(lblNewLabel);
+		
+		JButton btnNewButton_2 = new JButton("Apply");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StateOfApply = true;
+				EDC.SendDataClass.SleepTimeToSendData = DelaySendTime;
+				System.out.println(DelaySendTime);
+				
+			}
+		});
+		btnNewButton_2.setBounds(668, 485, 97, 25);
+		panel_3.add(btnNewButton_2);
+		
+		textFieldIPRaspi = new JTextField();
+		textFieldIPRaspi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(arg0.getSource() == textFieldIPRaspi)
+				{
+					IPRaspberryFromUser = arg0.getActionCommand();
+				}
+			}
+		});
+		textFieldIPRaspi.setBounds(163, 79, 116, 22);
+		panel_3.add(textFieldIPRaspi);
+		textFieldIPRaspi.setColumns(10);
+		
+		JLabel lblIpRaspberrypi = new JLabel("IP RaspberryPi");
+		lblIpRaspberrypi.setBounds(32, 82, 107, 16);
+		panel_3.add(lblIpRaspberrypi);
+		
+		textFieldUserRaspi = new JTextField();
+		textFieldUserRaspi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == textFieldUserRaspi)
+				{
+					UserRaspberryFromUser = e.getActionCommand();
+				}
+			}
+		});
+		textFieldUserRaspi.setBounds(163, 118, 116, 22);
+		panel_3.add(textFieldUserRaspi);
+		textFieldUserRaspi.setColumns(10);
+		
+		textFieldPassRaspi = new JTextField();
+		textFieldPassRaspi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == textFieldPassRaspi)
+				{
+					PasswordRaspberryFromUser = e.getActionCommand();
+				}
+			}
+		});
+		textFieldPassRaspi.setBounds(163, 153, 116, 22);
+		panel_3.add(textFieldPassRaspi);
+		textFieldPassRaspi.setColumns(10);
+		
+		JLabel lblUsernameRaspberrypi = new JLabel("Username RaspberryPi");
+		lblUsernameRaspberrypi.setBounds(12, 121, 140, 16);
+		panel_3.add(lblUsernameRaspberrypi);
+		
+		JLabel lblPasswordRaspberrypi = new JLabel("Password RaspberryPi");
+		lblPasswordRaspberrypi.setBounds(12, 156, 140, 16);
+		panel_3.add(lblPasswordRaspberrypi);
+	}
+	public static void SubMarineStateOFF()
+	{
+		SubMarineState.setVisible(false);
+		
+	}
+	public static void SubMarineCameraOFF()
+	{
+		SubMarineCamera.setVisible(false);
+	}
+}
